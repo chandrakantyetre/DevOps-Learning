@@ -1,0 +1,514 @@
+# Day 3 – AWS Fundamentals (Part 3)
+
+> **Roadmap:** 21-Day DevOps Preparation
+>
+> **Topic:** AWS Global Infrastructure
+>
+> **Status:** ✅ Completed
+
+---
+
+# AWS Global Infrastructure
+
+AWS has built its cloud infrastructure across multiple geographical locations around the world.
+
+The main components of AWS Global Infrastructure are:
+
+- AWS Regions
+- Availability Zones (AZs)
+- Edge Locations
+
+These components help AWS provide:
+
+- High Availability
+- Fault Tolerance
+- Low Latency
+- Disaster Recovery
+- Better Performance
+
+---
+
+# Why Doesn't AWS Have Only One Data Center?
+
+Suppose AWS had only one data center.
+
+If a disaster occurs such as:
+
+- Fire
+- Flood
+- Earthquake
+- Power Failure
+
+Then:
+
+- Applications become unavailable.
+- Websites stop working.
+- Business operations are affected.
+- Customers cannot access services.
+
+To avoid this, AWS builds infrastructure across multiple geographical locations.
+
+---
+
+# AWS Region
+
+## Definition
+
+An AWS Region is a **geographical location** where AWS operates multiple Availability Zones.
+
+Each Region is isolated from other Regions.
+
+---
+
+## Examples
+
+- Mumbai (ap-south-1)
+- Singapore (ap-southeast-1)
+- Tokyo (ap-northeast-1)
+- London (eu-west-2)
+- Frankfurt (eu-central-1)
+- Sydney (ap-southeast-2)
+
+---
+
+## Why Do We Need Multiple Regions?
+
+AWS creates multiple Regions to:
+
+- Reduce latency
+- Provide disaster recovery
+- Improve availability
+- Meet legal and compliance requirements
+- Serve customers closer to their locations
+
+---
+
+## Example
+
+If most of your users are in India,
+
+Choose:
+
+**Mumbai Region**
+
+Reason:
+
+- Lower latency
+- Faster response time
+- Better user experience
+
+---
+
+# Real DevOps Example
+
+Suppose your company is located in Pune.
+
+Most customers are from India.
+
+Deploy the application in:
+
+**Mumbai Region**
+
+instead of London or Sydney.
+
+---
+
+# Interview Question
+
+## What is an AWS Region?
+
+**Answer**
+
+An AWS Region is a geographical location where AWS operates multiple Availability Zones. Customers select a Region based on factors such as latency, compliance, and customer location.
+
+---
+
+# Availability Zone (AZ)
+
+## Definition
+
+An Availability Zone (AZ) is one or more physically separate data centers within an AWS Region.
+
+Each AZ has:
+
+- Independent Power
+- Independent Cooling
+- Independent Networking
+
+AZs are connected to each other using high-speed, low-latency networks.
+
+---
+
+## Example
+
+Mumbai Region
+
+```text
+Mumbai Region
+│
+├── AZ-A
+├── AZ-B
+└── AZ-C
+```
+
+Each Availability Zone is physically separated from the others.
+
+---
+
+# Why Do We Need Multiple Availability Zones?
+
+Suppose only one data center exists in Mumbai.
+
+If that data center experiences:
+
+- Fire
+- Hardware Failure
+- Power Failure
+
+The application becomes unavailable.
+
+To prevent this,
+
+AWS provides multiple Availability Zones.
+
+---
+
+# Multi-AZ Deployment
+
+Example
+
+```text
+Mumbai Region
+
+AZ-A
+│
+EC2-1
+
+AZ-B
+│
+EC2-2
+```
+
+If AZ-A fails,
+
+EC2 running in AZ-B continues serving users.
+
+---
+
+# High Availability
+
+High Availability means the application remains available even if one Availability Zone fails.
+
+Deploying resources across multiple AZs improves application availability.
+
+---
+
+# Fault Tolerance
+
+Fault Tolerance means the system continues operating even when one component fails.
+
+Multiple Availability Zones provide fault tolerance.
+
+---
+
+# Interview Question
+
+## What is an Availability Zone?
+
+**Answer**
+
+An Availability Zone is one or more physically separate data centers within an AWS Region. Multiple Availability Zones provide high availability and fault tolerance.
+
+---
+
+# Region vs Availability Zone
+
+| Region | Availability Zone |
+|----------|-------------------|
+| Geographic Location | Physical Data Center(s) |
+| Contains Multiple AZs | Belongs to One Region |
+| Example: Mumbai | Example: ap-south-1a |
+
+---
+
+# Edge Location
+
+## Definition
+
+An Edge Location is a site that caches and delivers content closer to users.
+
+It helps reduce latency and improve application performance.
+
+---
+
+# Why Do We Need Edge Locations?
+
+Suppose your application is hosted in the Mumbai Region.
+
+Users access the application from:
+
+- Delhi
+- Bangalore
+- Chennai
+
+Without Edge Locations,
+
+every request travels to Mumbai.
+
+This increases latency.
+
+AWS solves this by caching content near users.
+
+---
+
+# Example
+
+```text
+              Mumbai Region
+             (Original Content)
+
+                    │
+        ────────────┼────────────
+        │           │           │
+        ▼           ▼           ▼
+   Delhi Edge   Pune Edge   Chennai Edge
+    Location     Location     Location
+
+        │           │           │
+        ▼           ▼           ▼
+      Users       Users       Users
+```
+
+Users receive cached content from the nearest Edge Location.
+
+---
+
+# What is Stored in an Edge Location?
+
+Edge Locations mainly cache:
+
+- Images
+- Videos
+- CSS Files
+- JavaScript Files
+- Static Website Content
+- Downloadable Files
+
+They do **not** store your complete application or database.
+
+---
+
+# AWS Service Using Edge Locations
+
+**Amazon CloudFront**
+
+CloudFront is AWS's Content Delivery Network (CDN).
+
+It delivers cached content from the nearest Edge Location.
+
+---
+
+# Real DevOps Example
+
+Website hosted in:
+
+Mumbai Region
+
+Users are in Delhi.
+
+Without CloudFront
+
+```text
+Delhi User
+     │
+     ▼
+Mumbai Region
+```
+
+With CloudFront
+
+```text
+Delhi User
+     │
+     ▼
+Delhi Edge Location
+     │
+     ▼
+Mumbai Region (only when required)
+```
+
+Result:
+
+- Faster Loading
+- Lower Latency
+- Better User Experience
+
+---
+
+# Region vs Availability Zone vs Edge Location
+
+| Region | Availability Zone | Edge Location |
+|----------|-------------------|---------------|
+| Geographic Location | One or more physically separate data centers | Caches and delivers content near users |
+| Runs Applications | Runs Infrastructure | Delivers Cached Content |
+| Example: Mumbai | Example: ap-south-1a | CloudFront Edge Location |
+
+---
+
+# Memory Trick
+
+```text
+Region
+↓
+Where Applications Run
+
+Availability Zone
+↓
+Where EC2 Instances Run
+
+Edge Location
+↓
+Where Cached Content is Delivered
+```
+
+---
+
+# High Availability vs Fault Tolerance
+
+## High Availability
+
+Application remains available even if one Availability Zone fails.
+
+Example:
+
+EC2 deployed in AZ-A and AZ-B.
+
+---
+
+## Fault Tolerance
+
+System continues operating without interruption when a component fails.
+
+Multiple AZ deployment provides fault tolerance.
+
+---
+
+# Interview Questions
+
+## What is an AWS Region?
+
+A geographical location where AWS operates multiple Availability Zones.
+
+---
+
+## What is an Availability Zone?
+
+One or more physically separate data centers within an AWS Region.
+
+---
+
+## Why does AWS have multiple Availability Zones?
+
+To provide High Availability and Fault Tolerance.
+
+---
+
+## What is an Edge Location?
+
+A location that caches and delivers content closer to users.
+
+---
+
+## Which AWS service uses Edge Locations?
+
+Amazon CloudFront.
+
+---
+
+## Does an Edge Location store your complete application?
+
+No.
+
+It mainly stores cached static content such as images, videos, CSS, and JavaScript files.
+
+---
+
+## Why should Indian users use the Mumbai Region?
+
+Because it provides lower latency and faster response times.
+
+---
+
+# Key Points to Remember
+
+✅ Region = Geographical Location
+
+✅ Region contains Multiple Availability Zones
+
+✅ Availability Zone = One or more physically separate data centers
+
+✅ Deploying across Multiple AZs provides High Availability
+
+✅ Edge Locations cache content closer to users
+
+✅ CloudFront uses Edge Locations
+
+✅ Edge Locations improve application performance
+
+---
+
+# Summary
+
+```text
+World
+│
+├── Mumbai Region
+│     │
+│     ├── AZ-A
+│     ├── AZ-B
+│     └── AZ-C
+│
+│
+├── Singapore Region
+│     ├── AZ-A
+│     ├── AZ-B
+│
+│
+└── Edge Locations
+      ├── Delhi
+      ├── Pune
+      ├── Chennai
+      └── Bangalore
+
+Applications run in Regions.
+
+EC2 instances run inside Availability Zones.
+
+Users receive cached content from Edge Locations.
+```
+
+---
+
+# Topics Completed
+
+- ✅ AWS Regions
+- ✅ Availability Zones (AZs)
+- ✅ High Availability
+- ✅ Fault Tolerance
+- ✅ Edge Locations
+- ✅ Amazon CloudFront
+- ✅ AWS Global Infrastructure
+
+---
+
+# Next Topic
+
+➡️ AWS Identity and Access Management (IAM)
+
+- What is IAM?
+- Root User
+- IAM Users
+- IAM Groups
+- IAM Roles
+- IAM Policies
+- Principle of Least Privilege
