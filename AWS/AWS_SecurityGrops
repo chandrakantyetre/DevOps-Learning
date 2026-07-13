@@ -1,0 +1,298 @@
+# Security Groups Notes (Interview Revision)
+
+# 🛡️ AWS Security Groups
+
+## What is a Security Group?
+
+A **Security Group** is a **virtual firewall** attached to an EC2 instance that controls **network traffic**.
+
+It decides:
+
+* Who can connect **to** the EC2 instance.
+* What traffic the EC2 instance can send **out**.
+
+> **Interview Definition:**
+>
+> A Security Group is a stateful virtual firewall that controls inbound and outbound traffic for an EC2 instance.
+
+---
+
+# Why do we need a Security Group?
+
+To protect EC2 instances from unauthorized network access.
+
+Without a Security Group, anyone could attempt to connect to your server.
+
+---
+
+# Security Group Components
+
+A Security Group contains two types of rules:
+
+## 1. Inbound Rules
+
+Inbound Rules control **incoming traffic**.
+
+```text
+Internet
+    │
+    ▼
+EC2 Instance
+```
+
+Examples:
+
+| Service | Port | Protocol |
+| ------- | ---: | -------- |
+| SSH     |   22 | TCP      |
+| HTTP    |   80 | TCP      |
+| HTTPS   |  443 | TCP      |
+
+---
+
+## 2. Outbound Rules
+
+Outbound Rules control **outgoing traffic**.
+
+```text
+EC2 Instance
+      │
+      ▼
+Internet
+```
+
+Examples:
+
+* `sudo apt update`
+* Downloading software
+* Calling external APIs
+* Docker image pulls
+
+---
+
+# Common Ports
+
+| Port | Service | Purpose                   |
+| ---- | ------- | ------------------------- |
+| 22   | SSH     | Remote login to Linux EC2 |
+| 80   | HTTP    | Website access            |
+| 443  | HTTPS   | Secure website            |
+
+---
+
+# Security Group vs Key Pair
+
+| Security Group           | Key Pair                                |
+| ------------------------ | --------------------------------------- |
+| Virtual Firewall         | Authentication Mechanism                |
+| Controls network traffic | Verifies user identity                  |
+| Checked first            | Checked after network access is allowed |
+| Uses Ports               | Uses Public/Private Keys                |
+
+---
+
+# Connection Flow
+
+```text
+Laptop
+   │
+   ▼
+Security Group
+(Is Port 22 Allowed?)
+   │
+   ▼
+SSH Authentication
+(Key Pair)
+   │
+   ▼
+EC2 Login
+```
+
+Both conditions must be true:
+
+* ✅ Port 22 allowed
+* ✅ Correct `.pem` file
+
+---
+
+# Source
+
+## 0.0.0.0/0
+
+Means:
+
+> Allow traffic from **anywhere on the Internet**.
+
+Suitable for:
+
+* Public websites
+* HTTP
+* HTTPS
+
+Not recommended for SSH in production.
+
+---
+
+## My IP
+
+Means:
+
+> Only my computer can connect.
+
+This is the recommended option for SSH access.
+
+---
+
+# Real Examples
+
+## Scenario 1
+
+Inbound:
+
+```
+SSH (22)
+```
+
+Outbound:
+
+```
+Allow All
+```
+
+Result:
+
+* ✅ SSH works
+* ✅ `apt update` works
+
+---
+
+## Scenario 2
+
+Inbound:
+
+```
+SSH (22)
+```
+
+Outbound:
+
+```
+Blocked
+```
+
+Result:
+
+* ✅ SSH works
+* ❌ `apt update` fails
+* ❌ Cannot download packages
+* ❌ Cannot call external APIs
+
+---
+
+## Scenario 3
+
+Inbound:
+
+```
+HTTP (80)
+Blocked
+```
+
+Result:
+
+* ❌ Website cannot be opened in a browser.
+
+---
+
+## Scenario 4
+
+Inbound:
+
+```
+SSH (22)
+Blocked
+```
+
+Result:
+
+* ❌ Cannot SSH even with the correct `.pem` file.
+
+---
+
+# Why?
+
+Because the Security Group blocks the request **before** SSH authentication begins.
+
+---
+
+# Important Characteristics
+
+* Security Groups are **stateful**.
+* Attached to one or more EC2 instances.
+* Default outbound rule usually allows all traffic.
+* Multiple Security Groups can be attached to a single EC2 instance.
+
+---
+
+# Best Practices
+
+* Allow only the required ports.
+* Use **My IP** instead of `0.0.0.0/0` for SSH.
+* Keep databases accessible only through Private IPs.
+* Review Security Group rules regularly.
+
+---
+
+# Interview Questions
+
+### What is a Security Group?
+
+A Security Group is a stateful virtual firewall that controls inbound and outbound network traffic for an EC2 instance.
+
+---
+
+### Difference between Security Group and Key Pair
+
+* Security Group controls **network access**.
+* Key Pair provides **SSH authentication**.
+
+---
+
+### Can you SSH if Port 22 is blocked?
+
+No.
+
+SSH uses Port 22. If Port 22 is blocked, the connection is denied before the Key Pair is checked.
+
+---
+
+### Can users access a website if Port 80 is blocked?
+
+No.
+
+HTTP traffic uses Port 80, so the website cannot be accessed over HTTP.
+
+---
+
+### Why is `0.0.0.0/0` not recommended for SSH?
+
+Because it allows SSH connection attempts from anywhere on the Internet, increasing the attack surface. Restrict SSH to **My IP** or trusted IP addresses whenever possible.
+
+---
+
+# ⭐ Memory Trick
+
+**Security Group = Gate of the House 🛡️**
+
+It decides:
+
+> **Who is allowed to reach the house?**
+
+**Key Pair = House Key 🔑**
+
+It decides:
+
+> **Who is allowed to enter the house?**
+
+Both are required for a successful SSH login.
+
