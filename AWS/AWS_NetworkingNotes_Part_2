@@ -1,0 +1,99 @@
+# AWS Networking Notes (Part 2)
+
+## Internet Gateway (IGW)
+
+-   Connects a VPC to the Internet.
+-   Without an IGW, resources inside the VPC cannot communicate with the
+    Internet.
+-   An IGW **does not assign a Public IP**; it only provides a
+    communication path.
+
+## Route Table
+
+A Route Table contains rules that determine where network traffic should
+go.
+
+### Common Routes
+
+  Destination                     Target             Purpose
+  ------------------------------- ------------------ ------------------------
+  VPC CIDR (e.g. 172.31.0.0/16)   Local              Internal communication
+  0.0.0.0/0                       Internet Gateway   Internet access
+
+### Public Subnet
+
+A subnet is public when its Route Table contains:
+`0.0.0.0/0 → Internet Gateway`
+
+### Private Subnet
+
+A subnet is private when its Route Table does not contain a route to the
+Internet Gateway.
+
+## NAT Gateway
+
+-   Allows resources in a Private Subnet to access the Internet.
+-   Allows **outbound** connections only.
+-   Does **not** allow direct inbound connections from the Internet.
+
+### Common Uses
+
+-   apt update
+-   Install Docker
+-   Download packages
+-   Pull Docker images
+-   Access external APIs
+
+## SSH Checklist
+
+1.  EC2 is running.
+2.  Public IP assigned.
+3.  Internet Gateway attached.
+4.  Route Table has `0.0.0.0/0 → Internet Gateway`.
+5.  Security Group allows Port 22.
+6.  Correct `.pem` key.
+7.  SSH service is running.
+
+## Internet Gateway vs NAT Gateway
+
+  Internet Gateway                  NAT Gateway
+  --------------------------------- ------------------------------------------
+  Connects VPC to Internet          Gives Internet access to Private Subnets
+  Inbound & outbound (if allowed)   Outbound only
+  Used by Public Subnets            Used by Private Subnets
+
+## Production Architecture
+
+``` text
+Internet
+   |
+Internet Gateway
+   |
+Public Subnet
+   |
+Web Server
+   |
+Private Subnet
+   |
+Application Server
+   |
+Database
+```
+
+## Interview Questions
+
+### Why keep a database in a Private Subnet?
+
+Databases store sensitive information. Keeping them in a Private Subnet
+prevents direct Internet access. Only authorized application servers
+inside the VPC should access the database.
+
+### What makes a Public Subnet public?
+
+Its Route Table contains a route to the Internet Gateway.
+
+### Can you SSH to a Private EC2 through a NAT Gateway?
+
+No. NAT Gateway only allows outbound connections initiated from the
+Private Subnet and the corresponding responses.
+
