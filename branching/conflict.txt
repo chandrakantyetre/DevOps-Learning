@@ -1,1 +1,4 @@
+
 Hello guys we are learning git merge conflict practice
+Hello DevOps
+This conflict practice
